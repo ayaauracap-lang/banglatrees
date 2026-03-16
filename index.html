@@ -2,1383 +2,287 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BanglaTrees AI — Smart Reforestation Platform</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BanglaTrees · 25 Crore Monitor</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#040d08">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BanglaTrees">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+<meta name="description" content="Bangladesh 25 Crore Trees — AI Monitoring Dashboard">
+<meta name="mobile-web-app-capable" content="yes">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&display=swap" rel="stylesheet">
 <style>
-:root {
-  --forest: #1a3a2a;
-  --leaf: #2d6a4f;
-  --lime: #74c476;
-  --acid: #b7e876;
-  --soil: #5c4033;
-  --sand: #e8d5b7;
-  --sky: #1a2744;
-  --mist: #e8f4f0;
-  --white: #f5f5f0;
-  --ink: #0d1a13;
-  --mono: 'IBM Plex Mono', monospace;
-  --sans: 'DM Sans', sans-serif;
-  --display: 'Syne', sans-serif;
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#040d08;--bg2:#071209;--bg3:#0c1e10;
+  --green:#1a6b35;--lime:#52c46a;--acid:#a8f55e;--gold:#f5c842;
+  --white:#edf2e8;--muted:rgba(237,242,232,0.42);
+  --border:rgba(82,196,106,0.14);
+  --card:rgba(255,255,255,0.035);
+  --red:#ff5252;--orange:#ff9800;--blue:#4fc3f7;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Space Grotesk',sans-serif;
+  --display:'Fraunces',serif;
+  --nav-h:64px;--status-h:48px;
 }
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--white);font-family:var(--sans)}
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* STATUS BAR */
+.status-bar{height:var(--status-h);background:rgba(4,13,8,0.98);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--border);position:fixed;top:0;left:0;right:0;z-index:300;max-width:430px;margin:0 auto;}
+.sb-brand{display:flex;align-items:center;gap:8px}
+.sb-icon{width:28px;height:28px;background:linear-gradient(135deg,var(--green),var(--lime));border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.sb-name{font-family:var(--display);font-weight:700;font-size:1rem;color:var(--acid);letter-spacing:-0.02em}
+.sb-right{display:flex;align-items:center;gap:10px}
+.live-pill{display:flex;align-items:center;gap:5px;background:rgba(168,245,94,0.1);border:1px solid rgba(168,245,94,0.25);border-radius:20px;padding:3px 9px}
+.live-dot{width:5px;height:5px;background:var(--acid);border-radius:50%;animation:pulse 1.5s infinite}
+.live-txt{font-family:var(--mono);font-size:0.52rem;color:var(--acid);letter-spacing:0.08em}
+.sb-time{font-family:var(--mono);font-size:0.55rem;color:var(--muted)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.5)}}
 
-body {
-  background: var(--ink);
-  color: var(--white);
-  font-family: var(--sans);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+/* SCROLL AREA */
+.app-scroll{position:fixed;top:var(--status-h);bottom:var(--nav-h);left:0;right:0;max-width:430px;margin:0 auto;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;}
+.app-scroll::-webkit-scrollbar{display:none}
+.page{display:none;padding:12px 12px 16px;min-height:100%}
+.page.active{display:block}
 
-/* ── HEADER ── */
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.2rem 2.5rem;
-  background: rgba(13,26,19,0.95);
-  border-bottom: 1px solid rgba(116,196,118,0.2);
-  position: sticky; top: 0; z-index: 100;
-  backdrop-filter: blur(12px);
-}
-.logo {
-  font-family: var(--display);
-  font-size: 1.4rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: var(--acid);
-}
-.logo span { color: var(--lime); font-weight: 400; }
-nav { display: flex; gap: 0.5rem; }
-nav button {
-  background: transparent;
-  border: 1px solid rgba(116,196,118,0.25);
-  color: var(--white);
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  padding: 0.4rem 1rem;
-  border-radius: 2px;
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-nav button:hover, nav button.active {
-  background: var(--leaf);
-  border-color: var(--lime);
-  color: var(--acid);
-}
-.status-pill {
-  display: flex; align-items: center; gap: 0.4rem;
-  font-family: var(--mono); font-size: 0.65rem;
-  color: var(--lime); letter-spacing: 0.08em;
-}
-.pulse { width: 6px; height: 6px; background: var(--acid); border-radius: 50%;
-  animation: pulse 1.5s infinite; }
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.3)} }
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;height:var(--nav-h);background:rgba(4,13,8,0.98);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);z-index:300;padding-bottom:env(safe-area-inset-bottom)}
+.nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:all 0.2s;background:transparent;border:none;color:var(--muted);font-family:var(--mono);font-size:0.48rem;letter-spacing:0.06em;text-transform:uppercase;position:relative}
+.nav-item.active{color:var(--acid)}
+.nav-item.active::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:20px;height:2px;background:var(--acid);border-radius:2px}
+.nav-icon{font-size:1.15rem;line-height:1}
 
-/* ── MAIN LAYOUT ── */
-.app {
-  display: grid;
-  grid-template-columns: 380px 1fr;
-  grid-template-rows: 1fr;
-  height: calc(100vh - 58px);
-}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px}
+.card+.card{margin-top:8px}
+.section-label{font-family:var(--mono);font-size:0.52rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--lime);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
 
-/* ── SIDEBAR ── */
-.sidebar {
-  background: #0f1f17;
-  border-right: 1px solid rgba(116,196,118,0.12);
-  display: flex; flex-direction: column;
-  overflow: hidden;
-}
-.sidebar-tabs {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  border-bottom: 1px solid rgba(116,196,118,0.12);
-}
-.tab-btn {
-  background: transparent; border: none;
-  color: rgba(245,245,240,0.4);
-  font-family: var(--mono); font-size: 0.6rem;
-  padding: 0.8rem 0.3rem;
-  cursor: pointer; transition: all 0.2s;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  border-bottom: 2px solid transparent;
-  text-align: center;
-}
-.tab-btn:hover { color: var(--lime); }
-.tab-btn.active {
-  color: var(--acid);
-  border-bottom-color: var(--acid);
-  background: rgba(183,232,118,0.04);
-}
-.tab-icon { display: block; font-size: 1.1rem; margin-bottom: 0.2rem; }
+/* HERO STATS */
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.hero-stat{background:linear-gradient(135deg,rgba(26,107,53,0.35),rgba(4,13,8,0.9));border:1px solid rgba(82,196,106,0.2);border-radius:12px;padding:14px 12px;position:relative;overflow:hidden}
+.hero-stat::before{content:'';position:absolute;top:-15px;right:-15px;width:50px;height:50px;background:radial-gradient(circle,rgba(168,245,94,0.12),transparent 70%);border-radius:50%}
+.hs-val{font-family:var(--display);font-size:1.55rem;font-weight:900;color:var(--acid);line-height:1;letter-spacing:-0.03em}
+.hs-label{font-family:var(--mono);font-size:0.5rem;color:var(--muted);letter-spacing:0.1em;margin-top:3px;text-transform:uppercase}
+.hs-sub{font-size:0.62rem;color:var(--lime);margin-top:4px}
+.hs-trend{display:inline-flex;align-items:center;gap:3px;font-family:var(--mono);font-size:0.52rem;color:var(--acid);background:rgba(168,245,94,0.1);padding:2px 6px;border-radius:3px;margin-top:4px}
 
-.sidebar-content {
-  flex: 1; overflow-y: auto; padding: 1.2rem;
-}
-.sidebar-content::-webkit-scrollbar { width: 3px; }
-.sidebar-content::-webkit-scrollbar-thumb { background: var(--leaf); border-radius: 2px; }
+/* PROGRESS BAR */
+.prog-wrap{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-top:6px}
+.prog-fill{height:100%;border-radius:3px;transition:width 1s ease}
 
-.panel { display: none; }
-.panel.active { display: block; }
+/* MAP SECTION */
+.map-container{position:relative;background:linear-gradient(135deg,#071a0c,#040d08);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.map-tabs{display:flex;gap:4px;padding:8px 8px 0;overflow-x:auto;scrollbar-width:none}
+.map-tabs::-webkit-scrollbar{display:none}
+.map-tab{flex-shrink:0;background:var(--card);border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:0.5rem;padding:5px 10px;border-radius:5px;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em;white-space:nowrap}
+.map-tab.active{background:rgba(82,196,106,0.15);color:var(--acid);border-color:var(--lime)}
+.map-caption{font-family:var(--mono);font-size:0.5rem;color:var(--muted);padding:6px 10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.map-caption a{color:var(--lime);text-decoration:none}
 
-.section-label {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--lime);
-  margin-bottom: 0.8rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid rgba(116,196,118,0.15);
-}
+/* SVG Bangladesh Map */
+.bd-map-wrap{padding:10px;position:relative}
+.div-path{transition:all 0.25s;cursor:pointer;stroke-width:1.5}
+.div-path:hover{filter:brightness(1.4)}
+.div-path.selected{filter:brightness(1.6)}
+.div-label{font-family:var(--mono);font-size:6px;fill:rgba(237,242,232,0.7);pointer-events:none;font-weight:500}
+.div-label-sub{font-family:var(--mono);font-size:4.5px;fill:rgba(237,242,232,0.4);pointer-events:none}
 
-/* Region Cards */
-.region-card {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(116,196,118,0.1);
-  border-radius: 4px;
-  padding: 0.9rem;
-  margin-bottom: 0.6rem;
-  cursor: pointer;
-  transition: all 0.25s;
-  position: relative;
-  overflow: hidden;
-}
-.region-card::before {
-  content: '';
-  position: absolute; left: 0; top: 0; bottom: 0;
-  width: 3px;
-  background: var(--leaf);
-  transform: scaleY(0);
-  transition: transform 0.25s;
-}
-.region-card:hover { border-color: rgba(116,196,118,0.35); background: rgba(255,255,255,0.06); }
-.region-card:hover::before, .region-card.selected::before { transform: scaleY(1); }
-.region-card.selected {
-  border-color: var(--lime);
-  background: rgba(45,106,79,0.15);
-}
-.region-name {
-  font-family: var(--display);
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--white);
-  margin-bottom: 0.3rem;
-}
-.region-meta {
-  display: flex; gap: 0.8rem;
-  font-family: var(--mono); font-size: 0.6rem;
-  color: rgba(245,245,240,0.5);
-}
-.region-tag {
-  background: rgba(116,196,118,0.1);
-  color: var(--lime);
-  padding: 0.15rem 0.5rem;
-  border-radius: 2px;
-  font-family: var(--mono); font-size: 0.6rem;
-}
-.region-ha {
-  font-family: var(--mono); font-size: 0.7rem;
-  color: var(--acid); font-weight: 500;
-}
+/* DIVISION DETAIL PANEL */
+.div-panel{background:linear-gradient(135deg,rgba(26,107,53,0.2),rgba(4,13,8,0.95));border:1px solid rgba(82,196,106,0.3);border-radius:10px;padding:12px;margin:8px 8px 0;display:none}
+.div-panel.show{display:block}
+.dp-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.dp-name{font-family:var(--display);font-size:1.1rem;font-weight:900;color:var(--acid);letter-spacing:-0.02em}
+.dp-close{background:none;border:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:0}
+.dp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:8px}
+.dp-stat{background:rgba(255,255,255,0.04);border-radius:6px;padding:7px;text-align:center}
+.dp-val{font-family:var(--display);font-size:0.9rem;font-weight:700;color:var(--acid)}
+.dp-lbl{font-family:var(--mono);font-size:0.45rem;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase}
+.dp-species{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+.sp-chip{background:rgba(168,245,94,0.08);color:rgba(168,245,94,0.7);font-family:var(--mono);font-size:0.5rem;padding:2px 7px;border-radius:3px;border:1px solid rgba(168,245,94,0.15)}
+.dp-alerts{margin-top:8px}
+.alert-item{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.68rem}
+.alert-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 
-/* Species Cards */
-.species-card {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(116,196,118,0.1);
-  border-radius: 4px;
-  padding: 0.9rem;
-  margin-bottom: 0.6rem;
-  cursor: pointer;
-  transition: all 0.25s;
-}
-.species-card:hover { border-color: rgba(116,196,118,0.35); background: rgba(255,255,255,0.06); }
-.species-header { display: flex; justify-content: space-between; align-items: flex-start; }
-.species-name {
-  font-family: var(--display); font-size: 0.9rem; font-weight: 700;
-}
-.species-sci { font-style: italic; color: rgba(245,245,240,0.45); font-size: 0.7rem; }
-.co2-badge {
-  background: linear-gradient(135deg, var(--leaf), var(--forest));
-  border: 1px solid var(--lime);
-  color: var(--acid);
-  font-family: var(--mono); font-size: 0.65rem; font-weight: 500;
-  padding: 0.2rem 0.5rem; border-radius: 2px;
-  white-space: nowrap;
-}
-.species-zones {
-  display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.5rem;
-}
-.zone-chip {
-  background: rgba(183,232,118,0.08);
-  color: rgba(183,232,118,0.7);
-  font-family: var(--mono); font-size: 0.55rem;
-  padding: 0.1rem 0.4rem; border-radius: 2px;
-}
-.co2-bar-wrap { margin-top: 0.5rem; }
-.co2-bar-label {
-  display: flex; justify-content: space-between;
-  font-family: var(--mono); font-size: 0.58rem; color: rgba(245,245,240,0.4);
-  margin-bottom: 0.2rem;
-}
-.co2-bar-bg {
-  height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden;
-}
-.co2-bar-fill {
-  height: 100%; background: linear-gradient(90deg, var(--leaf), var(--acid));
-  border-radius: 2px; transition: width 0.6s ease;
-}
+/* NDC CARDS */
+.ndc-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.ndc-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px;text-align:center}
+.ndc-val{font-family:var(--display);font-size:1.3rem;font-weight:900;letter-spacing:-0.03em}
+.ndc-lbl{font-family:var(--mono);font-size:0.5rem;color:var(--muted);letter-spacing:0.07em;text-transform:uppercase;margin-top:2px}
 
-/* Env Monitor */
-.env-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 0.5rem; margin-bottom: 1rem;
-}
-.env-metric {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(116,196,118,0.1);
-  border-radius: 4px; padding: 0.8rem;
-  text-align: center;
-}
-.env-value {
-  font-family: var(--display); font-size: 1.5rem; font-weight: 700;
-  color: var(--acid); line-height: 1;
-}
-.env-unit { font-family: var(--mono); font-size: 0.6rem; color: rgba(245,245,240,0.4); }
-.env-label { font-family: var(--mono); font-size: 0.6rem; color: var(--lime); margin-top: 0.2rem; }
-.env-trend {
-  font-family: var(--mono); font-size: 0.55rem;
-  padding: 0.1rem 0.4rem; border-radius: 2px; margin-top: 0.3rem; display: inline-block;
-}
-.trend-up { background: rgba(239,68,68,0.15); color: #f87171; }
-.trend-down { background: rgba(116,196,118,0.15); color: var(--lime); }
-.trend-stable { background: rgba(255,255,255,0.06); color: rgba(245,245,240,0.5); }
+/* CO2 CHART */
+.chart-area{position:relative;height:80px;margin-top:8px}
+.chart-svg{width:100%;height:100%}
+.chart-label{font-family:var(--mono);font-size:0.5rem;color:var(--muted)}
 
-.env-chart { margin-bottom: 1rem; }
-.mini-chart { height: 60px; position: relative; }
-.mini-chart svg { width: 100%; height: 100%; }
+/* DIVISION LIST */
+.div-list{display:flex;flex-direction:column;gap:5px}
+.div-row{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 11px;display:flex;align-items:center;gap:9px;cursor:pointer;transition:all 0.2s}
+.div-row:hover,.div-row.active-row{border-color:var(--lime);background:rgba(26,107,53,0.15)}
+.dr-color{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.dr-info{flex:1}
+.dr-name{font-family:var(--sans);font-weight:600;font-size:0.82rem}
+.dr-meta{font-family:var(--mono);font-size:0.5rem;color:var(--muted);margin-top:1px}
+.dr-bar{height:2px;background:rgba(255,255,255,0.05);border-radius:1px;margin-top:4px;overflow:hidden}
+.dr-bar-fill{height:100%;border-radius:1px}
+.dr-trees{font-family:var(--mono);font-size:0.68rem;color:var(--acid);white-space:nowrap}
 
-/* AI Chat */
-.ai-section { display: flex; flex-direction: column; height: 100%; }
-.ai-messages {
-  flex: 1; overflow-y: auto; padding: 0 0 0.5rem;
-  display: flex; flex-direction: column; gap: 0.8rem;
-}
-.ai-messages::-webkit-scrollbar { width: 2px; }
-.ai-messages::-webkit-scrollbar-thumb { background: var(--leaf); }
-.msg {
-  max-width: 90%;
-  padding: 0.7rem 0.9rem;
-  border-radius: 4px;
-  font-size: 0.8rem; line-height: 1.5;
-}
-.msg-user {
-  align-self: flex-end;
-  background: rgba(45,106,79,0.3);
-  border: 1px solid rgba(116,196,118,0.25);
-  color: var(--white);
-}
-.msg-ai {
-  align-self: flex-start;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(116,196,118,0.12);
-  color: rgba(245,245,240,0.9);
-}
-.msg-ai .msg-header {
-  font-family: var(--mono); font-size: 0.58rem;
-  color: var(--acid); letter-spacing: 0.08em;
-  margin-bottom: 0.4rem;
-  display: flex; align-items: center; gap: 0.4rem;
-}
-.msg-ai .msg-header::before { content: '◆'; font-size: 0.5rem; }
-.ai-input-wrap {
-  padding-top: 0.8rem;
-  border-top: 1px solid rgba(116,196,118,0.12);
-  display: flex; gap: 0.5rem; align-items: flex-end;
-}
-.ai-input {
-  flex: 1; background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(116,196,118,0.2);
-  color: var(--white); font-family: var(--sans); font-size: 0.78rem;
-  padding: 0.6rem 0.8rem; border-radius: 4px;
-  resize: none; outline: none; min-height: 40px; max-height: 100px;
-  line-height: 1.4;
-}
-.ai-input:focus { border-color: var(--lime); }
-.ai-input::placeholder { color: rgba(245,245,240,0.25); }
-.ai-send {
-  background: var(--leaf); border: none;
-  color: var(--acid); font-family: var(--mono); font-size: 0.7rem;
-  padding: 0.6rem 0.9rem; border-radius: 4px;
-  cursor: pointer; transition: all 0.2s; white-space: nowrap;
-  letter-spacing: 0.05em;
-}
-.ai-send:hover { background: var(--lime); color: var(--ink); }
-.ai-send:disabled { opacity: 0.4; cursor: not-allowed; }
-.typing-dots { display: flex; gap: 3px; align-items: center; padding: 0.2rem 0; }
-.typing-dots span {
-  width: 4px; height: 4px; background: var(--lime); border-radius: 50%;
-  animation: bounce 1.2s infinite;
-}
-.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+/* SPECIES PAGE */
+.sp-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px;margin-bottom:7px}
+.spc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.spc-name{font-family:var(--sans);font-weight:600;font-size:0.9rem}
+.spc-sci{font-style:italic;font-size:0.62rem;color:var(--muted)}
+.spc-badge{background:linear-gradient(135deg,var(--green),#0d2e17);border:1px solid var(--lime);color:var(--acid);font-family:var(--mono);font-size:0.6rem;padding:3px 8px;border-radius:4px;white-space:nowrap}
+.spc-zones{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:5px}
+.spc-bar-wrap{height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
+.spc-bar{height:100%;border-radius:2px}
+.spc-why{font-size:0.66rem;color:var(--muted);line-height:1.45;margin-top:5px}
 
-.quick-prompts { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.6rem; }
-.qp-btn {
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(116,196,118,0.15);
-  color: rgba(245,245,240,0.6); font-family: var(--mono); font-size: 0.58rem;
-  padding: 0.25rem 0.6rem; border-radius: 2px; cursor: pointer; transition: all 0.2s;
-  letter-spacing: 0.04em;
-}
-.qp-btn:hover { background: rgba(116,196,118,0.1); color: var(--lime); border-color: var(--lime); }
+/* IOT / MONITORING */
+.iot-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.iot-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.iot-val{font-family:var(--display);font-size:1.2rem;font-weight:700;line-height:1}
+.iot-unit{font-family:var(--mono);font-size:0.5rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
+.iot-trend{font-family:var(--mono);font-size:0.52rem;margin-top:3px}
+.alert-banner{background:rgba(255,82,82,0.08);border:1px solid rgba(255,82,82,0.25);border-radius:8px;padding:8px 10px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.alert-banner.warn{background:rgba(255,152,0,0.08);border-color:rgba(255,152,0,0.25)}
+.alert-banner.ok{background:rgba(82,196,106,0.08);border-color:rgba(82,196,106,0.25)}
+.ab-icon{font-size:1rem;flex-shrink:0}
+.ab-text{font-size:0.68rem;line-height:1.4}
+.ab-title{font-weight:600;color:var(--white);margin-bottom:1px}
+.ab-sub{color:var(--muted)}
 
-/* ── MAP AREA ── */
-.map-area {
-  display: flex; flex-direction: column;
-  background: #0a1510;
-  position: relative; overflow: hidden;
-}
-.map-toolbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0.7rem 1.2rem;
-  border-bottom: 1px solid rgba(116,196,118,0.12);
-  background: rgba(10,21,16,0.9);
-  z-index: 10;
-}
-.map-title {
-  font-family: var(--display); font-size: 0.85rem; font-weight: 700;
-  color: var(--white); letter-spacing: -0.01em;
-}
-.map-tools { display: flex; gap: 0.4rem; }
-.tool-btn {
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(116,196,118,0.15);
-  color: rgba(245,245,240,0.6); font-family: var(--mono); font-size: 0.6rem;
-  padding: 0.3rem 0.7rem; border-radius: 2px; cursor: pointer; transition: all 0.2s;
-  letter-spacing: 0.05em;
-}
-.tool-btn:hover, .tool-btn.active { background: rgba(116,196,118,0.1); color: var(--lime); border-color: var(--lime); }
-.view-select {
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(116,196,118,0.15);
-  color: var(--lime); font-family: var(--mono); font-size: 0.6rem;
-  padding: 0.3rem 0.6rem; border-radius: 2px; cursor: pointer;
-  outline: none;
-}
+/* SATELLITE VIEWER */
+.sat-tabs{display:flex;gap:4px;margin-bottom:8px;overflow-x:auto;scrollbar-width:none}
+.sat-tabs::-webkit-scrollbar{display:none}
+.sat-btn{flex-shrink:0;background:var(--card);border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:0.5rem;padding:5px 9px;border-radius:5px;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em}
+.sat-btn.active{background:rgba(79,195,247,0.12);color:var(--blue);border-color:var(--blue)}
+.sat-frame-wrap{border-radius:10px;overflow:hidden;background:#040d08;position:relative;margin-bottom:8px}
+.sat-frame-wrap iframe{width:100%;height:280px;border:none;display:block}
+.sat-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);transition:opacity 0.3s;z-index:5}
+.sat-loading-spinner{width:30px;height:30px;border:2px solid var(--border);border-top-color:var(--lime);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sat-caption{font-family:var(--mono);font-size:0.52rem;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.sat-caption a{color:var(--blue);text-decoration:none}
 
-.map-container {
-  flex: 1; position: relative;
-}
-.bd-map {
-  width: 100%; height: 100%;
-}
+/* AI CHAT */
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - var(--status-h) - var(--nav-h) - 80px)}
+.chat-msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:8px;scrollbar-width:none}
+.chat-msgs::-webkit-scrollbar{display:none}
+.msg-user{background:rgba(168,245,94,0.08);border:1px solid rgba(168,245,94,0.15);border-radius:10px 10px 2px 10px;padding:9px 11px;font-size:0.78rem;align-self:flex-end;max-width:85%}
+.msg-ai{background:var(--card);border:1px solid var(--border);border-radius:2px 10px 10px 10px;padding:9px 11px;font-size:0.75rem;align-self:flex-start;max-width:90%;line-height:1.55}
+.msg-ai-label{font-family:var(--mono);font-size:0.48rem;color:var(--lime);letter-spacing:0.15em;margin-bottom:5px;text-transform:uppercase}
+.typing{display:flex;gap:4px;align-items:center;padding:4px 0}
+.typing span{width:5px;height:5px;background:var(--lime);border-radius:50%;animation:bounce 1.2s infinite}
+.typing span:nth-child(2){animation-delay:0.2s}
+.typing span:nth-child(3){animation-delay:0.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.chat-input-row{display:flex;gap:6px;padding-top:8px;border-top:1px solid var(--border)}
+.chat-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--white);font-family:var(--sans);font-size:0.78rem;outline:none;transition:border-color 0.2s}
+.chat-input:focus{border-color:var(--lime)}
+.chat-send{background:linear-gradient(135deg,var(--green),var(--lime));border:none;border-radius:8px;width:38px;height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:transform 0.15s;flex-shrink:0}
+.chat-send:hover{transform:scale(1.05)}
+.chat-send:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.quick-btns{display:flex;gap:4px;margin-bottom:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.quick-btns::-webkit-scrollbar{display:none}
+.qbtn{flex-shrink:0;background:var(--card);border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:0.5rem;padding:5px 9px;border-radius:4px;cursor:pointer;transition:all 0.2s;letter-spacing:0.04em}
+.qbtn:hover{border-color:var(--lime);color:var(--acid)}
 
-/* SVG Map Styles */
-.division-path {
-  stroke: rgba(116,196,118,0.35);
-  stroke-width: 1.5;
-  transition: all 0.3s;
-  cursor: pointer;
-}
-.division-path:hover { stroke: var(--acid); stroke-width: 2.5; filter: brightness(1.2); }
-.division-path.selected { stroke: var(--acid); stroke-width: 2.5; }
+/* FOREST ZONES */
+.zone-list{display:flex;flex-direction:column;gap:6px}
+.zone-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 11px}
+.zi-header{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.zi-color{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.zi-name{font-weight:600;font-size:0.82rem}
+.zi-ha{font-family:var(--mono);font-size:0.6rem;color:var(--acid);margin-left:auto}
+.zi-species{font-size:0.65rem;color:var(--muted);line-height:1.4}
+.zi-pct{font-family:var(--mono);font-size:0.52rem;color:var(--lime);margin-top:4px}
 
-.div-label {
-  font-family: var(--display); font-size: 11px; font-weight: 700;
-  fill: rgba(245,245,240,0.85); pointer-events: none;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-}
-.div-sublabel {
-  font-family: 'IBM Plex Mono', monospace; font-size: 7.5px;
-  fill: var(--acid); pointer-events: none;
-}
+/* MINI CO2 BARS */
+.co2-chart{display:flex;align-items:flex-end;gap:3px;height:60px;margin-top:8px;margin-bottom:4px}
+.co2-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.co2-bar-actual{background:linear-gradient(180deg,var(--acid),var(--lime));border-radius:2px 2px 0 0;width:100%;min-height:2px}
+.co2-bar-target{background:rgba(82,196,106,0.1);border:1px dashed rgba(82,196,106,0.3);border-radius:2px 2px 0 0;width:100%;min-height:2px}
+.co2-month{font-family:var(--mono);font-size:0.42rem;color:var(--muted)}
 
-/* Tooltip */
-.map-tooltip {
-  position: absolute; pointer-events: none;
-  background: rgba(10,21,16,0.97);
-  border: 1px solid var(--lime);
-  padding: 0.9rem 1.1rem;
-  border-radius: 4px; min-width: 220px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-  opacity: 0; transition: opacity 0.2s;
-  z-index: 50;
-}
-.map-tooltip.visible { opacity: 1; }
-.tt-title { font-family: var(--display); font-size: 1rem; font-weight: 700; color: var(--acid); margin-bottom: 0.5rem; }
-.tt-row { display: flex; justify-content: space-between; gap: 1rem;
-  font-family: var(--mono); font-size: 0.62rem; margin-bottom: 0.25rem; }
-.tt-key { color: rgba(245,245,240,0.45); }
-.tt-val { color: var(--white); font-weight: 500; }
-.tt-species { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(116,196,118,0.15); }
-.tt-species-title { font-family: var(--mono); font-size: 0.58rem; color: var(--lime); letter-spacing: 0.1em; margin-bottom: 0.3rem; }
-.tt-species-list { display: flex; flex-wrap: wrap; gap: 0.25rem; }
-.tt-chip {
-  background: rgba(45,106,79,0.3); border: 1px solid rgba(116,196,118,0.25);
-  color: var(--lime); font-family: var(--mono); font-size: 0.58rem;
-  padding: 0.1rem 0.35rem; border-radius: 2px;
-}
+/* PHASE TIMELINE */
+.timeline{position:relative;padding-left:20px;margin-top:8px}
+.timeline::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:1px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:12px}
+.tl-item::before{content:'';position:absolute;left:-17px;top:4px;width:8px;height:8px;background:var(--green);border-radius:50%;border:1.5px solid var(--lime)}
+.tl-item.active::before{background:var(--acid);animation:pulse 1.5s infinite}
+.tl-phase{font-family:var(--mono);font-size:0.5rem;color:var(--lime);letter-spacing:0.1em;text-transform:uppercase}
+.tl-title{font-weight:600;font-size:0.78rem;margin-top:1px}
+.tl-desc{font-size:0.65rem;color:var(--muted);margin-top:2px;line-height:1.4}
 
-/* Legend */
-.map-legend {
-  position: absolute; bottom: 1.2rem; right: 1.2rem;
-  background: rgba(10,21,16,0.93); border: 1px solid rgba(116,196,118,0.2);
-  padding: 0.8rem 1rem; border-radius: 4px;
-  font-family: var(--mono); font-size: 0.6rem;
+/* RESPONSIVE ADJUSTMENTS */
+@media (min-width:390px){
+  .hs-val{font-size:1.7rem}
+  .dp-name{font-size:1.2rem}
 }
-.legend-title { color: var(--lime); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
-.legend-item { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; color: rgba(245,245,240,0.7); }
-.legend-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
-
-/* Stats Bar */
-.stats-bar {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid rgba(116,196,118,0.12);
-  background: rgba(10,21,16,0.95);
-}
-.stat-item {
-  padding: 0.6rem 1rem;
-  border-right: 1px solid rgba(116,196,118,0.08);
-  text-align: center;
-}
-.stat-item:last-child { border-right: none; }
-.stat-val {
-  font-family: var(--display); font-size: 1.2rem; font-weight: 700;
-  color: var(--acid); line-height: 1;
-}
-.stat-label { font-family: var(--mono); font-size: 0.55rem; color: rgba(245,245,240,0.35); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.1rem; }
-
-/* Detail Panel */
-.detail-panel {
-  position: absolute; top: 50px; left: 1rem;
-  background: rgba(10,21,16,0.96);
-  border: 1px solid rgba(116,196,118,0.25);
-  border-radius: 4px; width: 260px;
-  padding: 1rem;
-  display: none;
-  z-index: 20;
-}
-.detail-panel.visible { display: block; }
-.dp-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem; }
-.dp-title { font-family: var(--display); font-size: 1.05rem; font-weight: 700; color: var(--acid); }
-.dp-close { background: none; border: none; color: rgba(245,245,240,0.4); cursor: pointer; font-size: 1rem; }
-.dp-close:hover { color: var(--white); }
-.dp-section-title { font-family: var(--mono); font-size: 0.58rem; color: var(--lime); letter-spacing: 0.12em; text-transform: uppercase; margin: 0.7rem 0 0.4rem; }
-.dp-row { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.65rem; margin-bottom: 0.2rem; }
-.dp-k { color: rgba(245,245,240,0.4); }
-.dp-v { color: var(--white); }
-.dp-species-item {
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(116,196,118,0.1);
-  border-radius: 3px; padding: 0.5rem 0.6rem; margin-bottom: 0.3rem;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.dp-sp-name { font-size: 0.72rem; color: var(--white); }
-.dp-sp-co2 { font-family: var(--mono); font-size: 0.6rem; color: var(--acid); }
-.dp-why { font-size: 0.72rem; color: rgba(245,245,240,0.6); line-height: 1.4; }
-
-/* Scanning animation on map */
-.scan-line {
-  position: absolute; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(183,232,118,0.4), transparent);
-  top: 0; animation: scan 4s linear infinite; pointer-events: none;
-}
-@keyframes scan { 0%{top:0%} 100%{top:100%} }
-
-/* ── LOADING ── */
-.loading-overlay {
-  position: fixed; inset: 0; background: var(--ink);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  z-index: 999; transition: opacity 0.5s;
-}
-.loading-overlay.hidden { opacity: 0; pointer-events: none; }
-.load-logo { font-family: var(--display); font-size: 2.5rem; font-weight: 800; color: var(--acid); margin-bottom: 1rem; letter-spacing: -0.03em; }
-.load-bar-wrap { width: 200px; height: 3px; background: rgba(255,255,255,0.07); border-radius: 2px; overflow: hidden; margin-bottom: 0.5rem; }
-.load-bar { height: 100%; background: linear-gradient(90deg, var(--leaf), var(--acid)); border-radius: 2px; width: 0; animation: load 1.5s ease forwards; }
-@keyframes load { to { width: 100%; } }
-.load-text { font-family: var(--mono); font-size: 0.65rem; color: rgba(245,245,240,0.4); letter-spacing: 0.1em; }
-
-/* Responsive utility */
-.hidden { display: none !important; }
-
 </style>
 </head>
 <body>
 
-<!-- Loading -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="load-logo">BanglaTrees<span style="color:var(--lime);font-weight:400"> AI</span></div>
-  <div class="load-bar-wrap"><div class="load-bar"></div></div>
-  <div class="load-text">INITIALIZING REFORESTATION INTELLIGENCE...</div>
+<div class="status-bar">
+  <div class="sb-brand">
+    <div class="sb-icon">🌿</div>
+    <span class="sb-name">BanglaTrees</span>
+  </div>
+  <div class="sb-right">
+    <div class="live-pill"><div class="live-dot"></div><span class="live-txt">LIVE</span></div>
+    <span class="sb-time" id="sbTime">--:--</span>
+  </div>
 </div>
 
-<!-- Header -->
-<header>
-  <div class="logo">BanglaTrees<span> AI</span></div>
-  <nav>
-    <button class="active" onclick="setView('map')">🗺 Map</button>
-    <button onclick="setView('analysis')">📊 Analysis</button>
-    <button onclick="setView('monitor')">📡 Monitor</button>
-  </nav>
-  <div class="status-pill">
-    <div class="pulse"></div>
-    LIVE SYSTEM · BD 2025
-  </div>
-</header>
+<div class="app-scroll" id="appScroll">
 
-<div class="app" id="mainApp">
+  <!-- ═══════════════ HOME PAGE ═══════════════ -->
+  <div class="page active" id="page-home">
+    <div class="section-label">National Dashboard · March 2026</div>
 
-  <!-- ── SIDEBAR ── -->
-  <div class="sidebar">
-    <div class="sidebar-tabs">
-      <button class="tab-btn active" onclick="switchTab('regions')">
-        <span class="tab-icon">🏔</span>Zones
-      </button>
-      <button class="tab-btn" onclick="switchTab('species')">
-        <span class="tab-icon">🌳</span>Species
-      </button>
-      <button class="tab-btn" onclick="switchTab('env')">
-        <span class="tab-icon">📡</span>Env
-      </button>
-      <button class="tab-btn" onclick="switchTab('ai')">
-        <span class="tab-icon">🤖</span>AI
-      </button>
-    </div>
-
-    <div class="sidebar-content">
-
-      <!-- ZONES PANEL -->
-      <div class="panel active" id="panel-regions">
-        <div class="section-label">Priority Planting Zones</div>
-        <div id="regions-list"></div>
+    <div class="hero-grid">
+      <div class="hero-stat">
+        <div class="hs-val" id="stat-planted">187.4M</div>
+        <div class="hs-label">Trees Planted</div>
+        <div class="hs-sub">74.9% of 250M target</div>
+        <div class="prog-wrap"><div class="prog-fill" style="width:74.9%;background:linear-gradient(90deg,var(--green),var(--acid))"></div></div>
       </div>
-
-      <!-- SPECIES PANEL -->
-      <div class="panel" id="panel-species">
-        <div class="section-label">High CO₂ Species</div>
-        <div id="species-list"></div>
+      <div class="hero-stat">
+        <div class="hs-val" id="stat-surviving">142.9M</div>
+        <div class="hs-label">Surviving</div>
+        <div class="hs-sub" id="stat-survival">76% survival rate</div>
+        <div class="prog-wrap"><div class="prog-fill" style="width:76%;background:linear-gradient(90deg,var(--lime),var(--acid))"></div></div>
       </div>
-
-      <!-- ENV PANEL -->
-      <div class="panel" id="panel-env">
-        <div class="section-label">Environmental Conditions</div>
-        <div class="env-grid" id="env-metrics"></div>
-        <div class="section-label">Seasonal Rainfall Trend</div>
-        <div class="env-chart">
-          <svg class="mini-chart" viewBox="0 0 300 60">
-            <defs>
-              <linearGradient id="rainGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#74c476" stop-opacity="0.4"/>
-                <stop offset="100%" stop-color="#74c476" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-            <path d="M0,55 L25,50 L50,40 L75,25 L100,10 L125,8 L150,15 L175,30 L200,40 L225,48 L250,52 L275,55 L300,55 Z" fill="url(#rainGrad)"/>
-            <polyline points="0,55 25,50 50,40 75,25 100,10 125,8 150,15 175,30 200,40 225,48 250,52 275,55 300,55" fill="none" stroke="#74c476" stroke-width="1.5"/>
-            <text x="2" y="58" font-family="IBM Plex Mono" font-size="6" fill="rgba(245,245,240,0.3)">Jan</text>
-            <text x="115" y="58" font-family="IBM Plex Mono" font-size="6" fill="rgba(245,245,240,0.3)">Jun</text>
-            <text x="278" y="58" font-family="IBM Plex Mono" font-size="6" fill="rgba(245,245,240,0.3)">Dec</text>
-          </svg>
-        </div>
-        <div class="section-label">CO₂ Levels (ppm)</div>
-        <div class="env-chart">
-          <svg class="mini-chart" viewBox="0 0 300 60">
-            <defs>
-              <linearGradient id="co2Grad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#b7e876" stop-opacity="0.3"/>
-                <stop offset="100%" stop-color="#b7e876" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-            <path d="M0,40 L50,38 L100,35 L150,32 L200,28 L250,22 L300,15 L300,55 L0,55 Z" fill="url(#co2Grad)"/>
-            <polyline points="0,40 50,38 100,35 150,32 200,28 250,22 300,15" fill="none" stroke="#b7e876" stroke-width="1.5" stroke-dasharray="4,2"/>
-            <text x="2" y="58" font-family="IBM Plex Mono" font-size="6" fill="rgba(245,245,240,0.3)">2020</text>
-            <text x="255" y="58" font-family="IBM Plex Mono" font-size="6" fill="rgba(245,245,240,0.3)">2025</text>
-          </svg>
-        </div>
-        <div class="section-label">Deforestation Risk Index</div>
-        <div id="risk-bars"></div>
+      <div class="hero-stat">
+        <div class="hs-val" id="stat-co2">12.8 Mt</div>
+        <div class="hs-label">CO₂ Sequestered</div>
+        <div class="hs-sub" id="stat-co2-target">vs 13.5 Mt target</div>
+        <div class="prog-wrap"><div class="prog-fill" style="width:94.8%;background:linear-gradient(90deg,var(--blue),var(--lime))"></div></div>
       </div>
-
-      <!-- AI PANEL -->
-      <div class="panel" id="panel-ai" style="height: calc(100% - 0px); display: none; flex-direction: column;">
-        <div class="section-label">AI Research Assistant</div>
-        <div class="ai-section">
-          <div class="quick-prompts">
-            <button class="qp-btn" onclick="sendQuick('Best species for Chittagong Hill Tracts?')">CHT Species</button>
-            <button class="qp-btn" onclick="sendQuick('What is the CO₂ absorption rate of mangroves in Khulna?')">Mangrove CO₂</button>
-            <button class="qp-btn" onclick="sendQuick('Why plant Sal trees in Rajshahi division?')">Sal in Rajshahi</button>
-            <button class="qp-btn" onclick="sendQuick('Compare bamboo vs teak for carbon sequestration in Bangladesh')">Bamboo vs Teak</button>
-            <button class="qp-btn" onclick="sendQuick('What environmental monitoring should we do for reforestation projects?')">Monitoring Plan</button>
-          </div>
-          <div class="ai-messages" id="aiMessages">
-            <div class="msg msg-ai">
-              <div class="msg-header">BANGLATREES AI · RESEARCH MODE</div>
-              Welcome! I'm your reforestation intelligence assistant for Bangladesh. I can help you analyze:<br><br>
-              🌳 Species selection by division<br>
-              📊 CO₂ sequestration data<br>
-              🌡 Environmental monitoring<br>
-              🗺 Zone-specific strategies<br><br>
-              Ask me anything about the 25 Crore Trees initiative.
-            </div>
-          </div>
-          <div class="ai-input-wrap">
-            <textarea class="ai-input" id="aiInput" placeholder="Ask about species, zones, CO₂ rates..." rows="1" onkeydown="handleAiKey(event)"></textarea>
-            <button class="ai-send" id="aiSendBtn" onclick="sendAiMessage()">SEND →</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ── MAP AREA ── -->
-  <div class="map-area" id="mapView">
-    <div class="map-toolbar">
-      <div class="map-title">Bangladesh Division Map — Reforestation Intelligence</div>
-      <div class="map-tools">
-        <select class="view-select" onchange="changeMapView(this.value)" id="mapViewSelect">
-          <option value="co2">View: CO₂ Potential</option>
-          <option value="area">View: Planting Area</option>
-          <option value="species">View: Priority Species</option>
-          <option value="risk">View: Deforestation Risk</option>
-        </select>
-        <button class="tool-btn" onclick="resetMapView()">⟳ Reset</button>
-        <button class="tool-btn active" id="tooltipToggle" onclick="toggleTooltips()">💬 Tooltips ON</button>
+      <div class="hero-stat">
+        <div class="hs-val" id="stat-revenue">$52M</div>
+        <div class="hs-label">Carbon Revenue</div>
+        <div class="hs-sub">Verra/GS verified</div>
+        <div class="prog-wrap"><div class="prog-fill" style="width:52%;background:linear-gradient(90deg,var(--gold),var(--acid))"></div></div>
       </div>
     </div>
 
-    <div class="map-container" id="mapContainer">
-      <div class="scan-line"></div>
-      <svg class="bd-map" viewBox="0 0 600 700" id="bdMapSvg" xmlns="http://www.w3.org/2000/svg">
-        <!-- Bangladesh Map - 8 Divisions with accurate relative shapes -->
-        <defs>
-          <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#0d2018"/>
-            <stop offset="100%" stop-color="#060e09"/>
-          </radialGradient>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-          </filter>
-        </defs>
-        <rect width="600" height="700" fill="url(#bgGrad)"/>
-        
-        <!-- Grid lines -->
-        <g stroke="rgba(116,196,118,0.05)" stroke-width="0.5">
-          <line x1="0" y1="100" x2="600" y2="100"/>
-          <line x1="0" y1="200" x2="600" y2="200"/>
-          <line x1="0" y1="300" x2="600" y2="300"/>
-          <line x1="0" y1="400" x2="600" y2="400"/>
-          <line x1="0" y1="500" x2="600" y2="500"/>
-          <line x1="0" y1="600" x2="600" y2="600"/>
-          <line x1="100" y1="0" x2="100" y2="700"/>
-          <line x1="200" y1="0" x2="200" y2="700"/>
-          <line x1="300" y1="0" x2="300" y2="700"/>
-          <line x1="400" y1="0" x2="400" y2="700"/>
-          <line x1="500" y1="0" x2="500" y2="700"/>
-        </g>
-
-        <!-- 
-          DIVISIONS (approximate shapes based on actual geography)
-          Using relative positioning within a 600x700 canvas
-        -->
-
-        <!-- RANGPUR (NW) -->
-        <path id="div-rangpur" class="division-path" data-div="rangpur"
-          d="M 80,50 L 220,40 L 240,80 L 260,140 L 200,160 L 150,180 L 80,170 L 70,130 Z"
-          fill="#1a4030" onclick="selectDivision('rangpur')"/>
-        <text class="div-label" x="160" y="115" text-anchor="middle">Rangpur</text>
-        <text class="div-sublabel" x="160" y="128" text-anchor="middle">BAMBOO · SAL · FRUIT</text>
-
-        <!-- MYMENSINGH (N-Center) -->
-        <path id="div-mymensingh" class="division-path" data-div="mymensingh"
-          d="M 260,60 L 360,55 L 380,100 L 370,160 L 310,175 L 260,165 L 240,120 Z"
-          fill="#1d4535" onclick="selectDivision('mymensingh')"/>
-        <text class="div-label" x="315" y="115" text-anchor="middle">Mymensingh</text>
-        <text class="div-sublabel" x="315" y="128" text-anchor="middle">SAL · BAMBOO</text>
-
-        <!-- SYLHET (NE) -->
-        <path id="div-sylhet" class="division-path" data-div="sylhet"
-          d="M 370,50 L 490,45 L 520,100 L 510,175 L 440,185 L 380,175 L 365,130 Z"
-          fill="#215040" onclick="selectDivision('sylhet')"/>
-        <text class="div-label" x="445" y="118" text-anchor="middle">Sylhet</text>
-        <text class="div-sublabel" x="445" y="131" text-anchor="middle">BAMBOO · TEA</text>
-
-        <!-- RAJSHAHI (W) -->
-        <path id="div-rajshahi" class="division-path" data-div="rajshahi"
-          d="M 70,170 L 155,180 L 200,165 L 215,230 L 200,290 L 140,310 L 80,295 L 60,240 Z"
-          fill="#173625" onclick="selectDivision('rajshahi')"/>
-        <text class="div-label" x="140" y="240" text-anchor="middle">Rajshahi</text>
-        <text class="div-sublabel" x="140" y="253" text-anchor="middle">SAL · ACACIA</text>
-
-        <!-- DHAKA (Center) -->
-        <path id="div-dhaka" class="division-path" data-div="dhaka"
-          d="M 215,165 L 310,175 L 380,175 L 390,250 L 370,320 L 300,335 L 215,310 L 200,250 Z"
-          fill="#1c3f30" onclick="selectDivision('dhaka')"/>
-        <text class="div-label" x="295" y="255" text-anchor="middle">Dhaka</text>
-        <text class="div-sublabel" x="295" y="268" text-anchor="middle">PEEPAL · PONGAMIA</text>
-
-        <!-- CHATTOGRAM (SE) -->
-        <path id="div-chattogram" class="division-path" data-div="chattogram"
-          d="M 380,175 L 440,185 L 510,175 L 530,250 L 520,380 L 470,440 L 390,420 L 370,350 L 370,270 Z"
-          fill="#1e4a38" onclick="selectDivision('chattogram')"/>
-        <text class="div-label" x="455" y="310" text-anchor="middle">Chattogram</text>
-        <text class="div-sublabel" x="455" y="323" text-anchor="middle">TEAK · BAMBOO</text>
-
-        <!-- KHULNA (SW) -->
-        <path id="div-khulna" class="division-path" data-div="khulna"
-          d="M 75,300 L 140,310 L 200,295 L 215,360 L 200,430 L 150,480 L 90,490 L 55,440 L 50,370 Z"
-          fill="#154030" onclick="selectDivision('khulna')"/>
-        <text class="div-label" x="135" y="395" text-anchor="middle">Khulna</text>
-        <text class="div-sublabel" x="135" y="408" text-anchor="middle">MANGROVE · SUNDRI</text>
-
-        <!-- BARISHAL (S-Center) -->
-        <path id="div-barishal" class="division-path" data-div="barishal"
-          d="M 200,330 L 300,335 L 370,350 L 370,430 L 320,490 L 240,510 L 160,490 L 150,430 L 200,380 Z"
-          fill="#193d2d" onclick="selectDivision('barishal')"/>
-        <text class="div-label" x="270" y="425" text-anchor="middle">Barishal</text>
-        <text class="div-sublabel" x="270" y="438" text-anchor="middle">KEORA · COCONUT</text>
-
-        <!-- Sundarbans (special zone) -->
-        <ellipse cx="100" cy="540" rx="55" ry="30" fill="rgba(21,64,48,0.7)" stroke="rgba(116,196,118,0.5)" stroke-width="1.5" stroke-dasharray="4,3"/>
-        <text font-family="IBM Plex Mono" font-size="8" fill="rgba(116,196,118,0.8)" x="100" y="538" text-anchor="middle">SUNDARBANS</text>
-        <text font-family="IBM Plex Mono" font-size="6.5" fill="rgba(183,232,118,0.6)" x="100" y="549" text-anchor="middle">UNESCO HERITAGE</text>
-
-        <!-- Bay of Bengal label -->
-        <text font-family="IBM Plex Mono" font-size="10" fill="rgba(116,196,118,0.25)" x="300" y="620" text-anchor="middle" letter-spacing="3">BAY OF BENGAL</text>
-
-        <!-- Decorative dots for cities -->
-        <circle cx="303" cy="290" r="5" fill="var(--acid)" opacity="0.9"/>
-        <text font-family="IBM Plex Mono" font-size="7" fill="var(--acid)" x="312" y="293">DHAKA</text>
-        <circle cx="455" cy="380" r="4" fill="#74c476" opacity="0.8"/>
-        <text font-family="IBM Plex Mono" font-size="7" fill="rgba(245,245,240,0.5)" x="463" y="383">CTG</text>
-
-        <!-- Compass -->
-        <g transform="translate(555, 80)">
-          <circle r="18" fill="rgba(10,21,16,0.8)" stroke="rgba(116,196,118,0.25)" stroke-width="1"/>
-          <text font-family="IBM Plex Mono" font-size="8" fill="var(--acid)" x="0" y="-8" text-anchor="middle">N</text>
-          <line x1="0" y1="-5" x2="0" y2="5" stroke="var(--acid)" stroke-width="1.5"/>
-          <line x1="-5" y1="0" x2="5" y2="0" stroke="rgba(245,245,240,0.3)" stroke-width="1"/>
-        </g>
-      </svg>
-
-      <!-- Tooltip -->
-      <div class="map-tooltip" id="mapTooltip">
-        <div class="tt-title" id="ttTitle">—</div>
-        <div id="ttRows"></div>
-        <div class="tt-species">
-          <div class="tt-species-title">PRIORITY SPECIES</div>
-          <div class="tt-species-list" id="ttSpecies"></div>
-        </div>
-      </div>
-
-      <!-- Detail Panel -->
-      <div class="detail-panel" id="detailPanel">
-        <div class="dp-header">
-          <div class="dp-title" id="dpTitle">—</div>
-          <button class="dp-close" onclick="closeDetail()">✕</button>
-        </div>
-        <div id="dpContent"></div>
-      </div>
-
-      <!-- Legend -->
-      <div class="map-legend">
-        <div class="legend-title">CO₂ POTENTIAL</div>
-        <div class="legend-item"><div class="legend-swatch" style="background:#215040"></div>Very High (40-80+ kg/yr)</div>
-        <div class="legend-item"><div class="legend-swatch" style="background:#1c3f30"></div>High (20-50 kg/yr)</div>
-        <div class="legend-item"><div class="legend-swatch" style="background:#173625"></div>Moderate (10-30 kg/yr)</div>
-        <div class="legend-item"><div class="legend-swatch" style="background:rgba(116,196,118,0.5);border:1px dashed var(--lime)"></div>Protected Zone</div>
+    <!-- NDC Progress -->
+    <div class="card" style="margin-bottom:8px">
+      <div class="section-label">NDC 3.0 Progress · UNFCCC</div>
+      <div class="ndc-row">
+        <div class="ndc-card"><div class="ndc-val" style="color:var(--lime)">28%</div><div class="ndc-lbl">AFOLU Target</div></div>
+        <div class="ndc-card"><div class="ndc-val" style="color:var(--acid)">42%</div><div class="ndc-lbl">Unconditional</div></div>
+        <div class="ndc-card"><div class="ndc-val" style="color:var(--blue)">15%</div><div class="ndc-lbl">Conditional</div></div>
+        <div class="ndc-card"><div class="ndc-val" style="color:var(--gold)">35%</div><div class="ndc-lbl">Carbon $</div></div>
       </div>
     </div>
 
-    <!-- Stats Bar -->
-    <div class="stats-bar">
-      <div class="stat-item">
-        <div class="stat-val" id="statTrees">25 Cr</div>
-        <div class="stat-label">Target Trees</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-val" id="statArea">637K ha</div>
-        <div class="stat-label">Priority Area</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-val" id="statCO2">4.2M t</div>
-        <div class="stat-label">CO₂/yr Potential</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-val" id="statSpecies">12+</div>
-        <div class="stat-label">Key Species</div>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<script>
-// ────────────────────────────────────────────────
-// DATA
-// ────────────────────────────────────────────────
-
-const DIVISIONS = {
-  rangpur: {
-    name: "Rangpur",
-    area_ha: 42500,
-    co2_potential: "Moderate-High",
-    co2_range: "15–40 kg/tree/yr",
-    forest_cover: "8%",
-    target_cover: "16%",
-    ecosystem: "Barind Tract, Flood Plains",
-    rainfall: "1,400–1,800 mm/yr",
-    temp: "18–32°C",
-    soil: "Sandy loam, clay",
-    risk: "Medium",
-    priority: 3,
-    color_base: "#1a4030",
-    color_hover: "#225540",
-    species: ["Bamboo (Bambusa balcooa)", "Sal (Shorea robusta)", "Fruit Trees (Mango, Jackfruit)", "Acacia auriculiformis"],
-    why: "Barind tract suffers from soil degradation and drought. Bamboo provides rapid cover and carbon. Sal is native and thrives here. Fruit trees support food security.",
-    co2_vals: [40, 22, 15, 11]
-  },
-  mymensingh: {
-    name: "Mymensingh",
-    area_ha: 31200,
-    co2_potential: "High",
-    co2_range: "22–60 kg/tree/yr",
-    forest_cover: "9%",
-    target_cover: "16%",
-    ecosystem: "Haor Wetlands, River Floodplains",
-    rainfall: "1,800–2,500 mm/yr",
-    temp: "17–34°C",
-    soil: "Deep alluvial, peat",
-    risk: "High",
-    priority: 2,
-    color_base: "#1d4535",
-    color_hover: "#266050",
-    species: ["Sal (Shorea robusta)", "Bamboo (Bambusa balcooa)", "Mahogany (Swietenia macrophylla)", "Jackfruit"],
-    why: "Haor ecosystem is flood-prone. Native Sal stabilizes soil during floods. Bamboo provides quick carbon capture. Mahogany offers long-term timber and carbon lock.",
-    co2_vals: [45, 35, 22, 12]
-  },
-  sylhet: {
-    name: "Sylhet",
-    area_ha: 38700,
-    co2_potential: "Very High",
-    co2_range: "35–80 kg/tree/yr",
-    forest_cover: "14%",
-    target_cover: "20%",
-    ecosystem: "Haor, Tropical Forests, Tea Gardens",
-    rainfall: "3,000–4,500 mm/yr",
-    temp: "16–34°C",
-    soil: "Acidic hill soil, peat wetlands",
-    risk: "Very High",
-    priority: 1,
-    color_base: "#215040",
-    color_hover: "#2a6855",
-    species: ["Bamboo (Bambusa balcooa)", "Tea Shade Trees (Albizia)", "Dipterocarpus spp.", "Rubber (Hevea brasiliensis)"],
-    why: "Highest rainfall supports maximum biomass. Tea garden shade trees are critical for soil health. Dipterocarpus native species restore original forest biodiversity.",
-    co2_vals: [60, 40, 50, 25]
-  },
-  rajshahi: {
-    name: "Rajshahi",
-    area_ha: 28900,
-    co2_potential: "Moderate",
-    co2_range: "15–45 kg/tree/yr",
-    forest_cover: "5%",
-    target_cover: "12%",
-    ecosystem: "Barind Tract, Padma River",
-    rainfall: "1,200–1,500 mm/yr",
-    temp: "14–40°C",
-    soil: "Sandy, drought-prone laterite",
-    risk: "Very High",
-    priority: 2,
-    color_base: "#173625",
-    color_hover: "#1e4832",
-    species: ["Sal (Shorea robusta)", "Acacia auriculiformis", "Indian Rosewood (Dalbergia latifolia)", "Neem (Azadirachta indica)"],
-    why: "Driest division — needs drought-tolerant species. Sal and Acacia excel here. Neem provides medicinal value and extreme heat tolerance. Rosewood locks carbon for decades.",
-    co2_vals: [40, 11, 45, 8]
-  },
-  dhaka: {
-    name: "Dhaka",
-    area_ha: 18500,
-    co2_potential: "High (Urban)",
-    co2_range: "20–45 kg/tree/yr",
-    forest_cover: "4%",
-    target_cover: "10%",
-    ecosystem: "Urban Heat Islands, Buriganga River",
-    rainfall: "1,800–2,200 mm/yr",
-    temp: "16–36°C",
-    soil: "Alluvial, urban compacted",
-    risk: "Critical",
-    priority: 2,
-    color_base: "#1c3f30",
-    color_hover: "#245040",
-    species: ["Peepal (Ficus religiosa)", "Pongamia (Pongamia pinnata)", "Jackfruit", "Rain Tree (Samanea saman)"],
-    why: "Urban air pollution requires large-canopy trees. Peepal uniquely releases oxygen at night. Pongamia is nitrogen-fixing and salt-tolerant for polluted soils. Rain Tree provides broad urban canopy.",
-    co2_vals: [30, 40, 12, 28]
-  },
-  chattogram: {
-    name: "Chattogram",
-    area_ha: 182000,
-    co2_potential: "Very High",
-    co2_range: "30–80 kg/tree/yr",
-    forest_cover: "22%",
-    target_cover: "35%",
-    ecosystem: "Hill Tracts, Cox's Bazar Coast",
-    rainfall: "2,500–3,500 mm/yr",
-    temp: "15–35°C",
-    soil: "Red laterite hill soil, coastal sandy",
-    risk: "High",
-    priority: 1,
-    color_base: "#1e4a38",
-    color_hover: "#276350",
-    species: ["Teak (Tectona grandis)", "Bamboo (Bambusa balcooa)", "Dipterocarpus turbinatus (Garjan)", "Chikrassia tabularis"],
-    why: "CHT has 82% of Bangladesh's reforestation potential. Teak provides high-value timber + 30-50 kg CO₂/yr. Garjan is the native dominant species. Bamboo is fastest carbon sequester.",
-    co2_vals: [40, 55, 55, 30]
-  },
-  khulna: {
-    name: "Khulna",
-    area_ha: 95000,
-    co2_potential: "High (Coastal)",
-    co2_range: "15–40 kg/tree/yr",
-    forest_cover: "18%",
-    target_cover: "25%",
-    ecosystem: "Sundarbans Mangroves, Coastal Chars",
-    rainfall: "1,500–2,000 mm/yr",
-    temp: "16–36°C",
-    soil: "Saline alluvial, coastal silt",
-    risk: "Critical (Sea Level Rise)",
-    priority: 1,
-    color_base: "#154030",
-    color_hover: "#1c5540",
-    species: ["Sundri (Heritiera fomes)", "Gewa (Excoecaria agallocha)", "Keora (Sonneratia apetala)", "Pongamia (Pongamia pinnata)"],
-    why: "Sundarbans protection is existential for Bangladesh. Mangroves sequester 3-5x more carbon per hectare than terrestrial forests. Sundri is the dominant species with highest CO₂ in root systems.",
-    co2_vals: [40, 25, 30, 40]
-  },
-  barishal: {
-    name: "Barishal",
-    area_ha: 41200,
-    co2_potential: "Moderate-High",
-    co2_range: "10–40 kg/tree/yr",
-    forest_cover: "6%",
-    target_cover: "14%",
-    ecosystem: "Coastal Chars, River Delta, Haors",
-    rainfall: "1,800–2,400 mm/yr",
-    temp: "16–34°C",
-    soil: "Alluvial, saline coastal",
-    risk: "High (Cyclone Risk)",
-    priority: 2,
-    color_base: "#193d2d",
-    color_hover: "#215040",
-    species: ["Keora (Sonneratia apetala)", "Coconut (Cocos nucifera)", "Bain (Avicennia officinalis)", "Indian Almond (Terminalia catappa)"],
-    why: "Delta chars need fast coastal colonizers. Keora is the best pioneer mangrove for new chars. Coconut provides livelihoods + carbon. Indian Almond tolerates cyclone conditions.",
-    co2_vals: [30, 10, 20, 35]
-  }
-};
-
-const ENV_METRICS = [
-  { label: "Avg Temperature", value: "26.4", unit: "°C", trend: "up", trend_label: "+0.8°C vs 2015" },
-  { label: "Annual Rainfall", value: "2,148", unit: "mm", trend: "down", trend_label: "-4% vs avg" },
-  { label: "Forest Cover", value: "11.2", unit: "%", trend: "up", trend_label: "+0.3% this yr" },
-  { label: "CO₂ Density", value: "421", unit: "ppm", trend: "up", trend_label: "+2.4 ppm/yr" },
-  { label: "Soil Moisture", value: "68", unit: "%", trend: "stable", trend_label: "Seasonal avg" },
-  { label: "Deforestation", value: "27K", unit: "ha/yr", trend: "down", trend_label: "-8% vs 2020" }
-];
-
-const RISK_ZONES = [
-  { zone: "Dhaka", level: 95, color: "#ef4444" },
-  { zone: "Rajshahi", level: 88, color: "#f97316" },
-  { zone: "Khulna Coast", level: 82, color: "#eab308" },
-  { zone: "Sylhet Hills", level: 71, color: "#84cc16" },
-  { zone: "Chattogram CHT", level: 65, color: "#22c55e" },
-];
-
-// ────────────────────────────────────────────────
-// INIT
-// ────────────────────────────────────────────────
-let selectedDiv = null;
-let tooltipsEnabled = true;
-let currentPanel = 'regions';
-
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    document.getElementById('loadingOverlay').classList.add('hidden');
-  }, 2000);
-  renderRegions();
-  renderSpecies();
-  renderEnvMetrics();
-  renderRiskBars();
-  setupMapHovers();
-});
-
-// ────────────────────────────────────────────────
-// RENDER FUNCTIONS
-// ────────────────────────────────────────────────
-function renderRegions() {
-  const container = document.getElementById('regions-list');
-  const sorted = Object.entries(DIVISIONS).sort((a,b) => a[1].priority - b[1].priority);
-  container.innerHTML = sorted.map(([id, d]) => `
-    <div class="region-card ${selectedDiv === id ? 'selected' : ''}" onclick="selectDivision('${id}')" id="rc-${id}">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.3rem">
-        <div class="region-name">${d.name}</div>
-        <div class="region-ha">${(d.area_ha/1000).toFixed(0)}K ha</div>
-      </div>
-      <div class="region-meta">
-        <span class="region-tag">P${d.priority}</span>
-        <span>${d.co2_potential}</span>
-      </div>
-      <div style="margin-top:0.4rem;font-family:var(--mono);font-size:0.6rem;color:rgba(245,245,240,0.4)">${d.ecosystem}</div>
-    </div>
-  `).join('');
-}
-
-function renderSpecies() {
-  const container = document.getElementById('species-list');
-  const allSpecies = [];
-  Object.values(DIVISIONS).forEach(d => {
-    d.species.forEach((sp, i) => {
-      const existing = allSpecies.find(s => s.name === sp);
-      if (!existing) {
-        allSpecies.push({
-          name: sp,
-          co2: d.co2_vals[i],
-          zones: [d.name]
-        });
-      } else {
-        existing.zones.push(d.name);
-        existing.co2 = Math.max(existing.co2, d.co2_vals[i]);
-      }
-    });
-  });
-  allSpecies.sort((a,b) => b.co2 - a.co2);
-  
-  container.innerHTML = allSpecies.slice(0,10).map(sp => {
-    const pct = Math.min(100, (sp.co2 / 65) * 100);
-    const sciMap = {
-      'Bamboo (Bambusa balcooa)': 'Bambusa balcooa',
-      'Sal (Shorea robusta)': 'Shorea robusta',
-      'Teak (Tectona grandis)': 'Tectona grandis',
-      'Sundri (Heritiera fomes)': 'Heritiera fomes',
-      'Dipterocarpus turbinatus (Garjan)': 'Dipterocarpus turbinatus',
-      'Indian Rosewood (Dalbergia latifolia)': 'Dalbergia latifolia',
-      'Pongamia (Pongamia pinnata)': 'Pongamia pinnata',
-    };
-    const displayName = sp.name.split('(')[0].trim();
-    const sci = sciMap[sp.name] || '';
-    return `
-      <div class="species-card">
-        <div class="species-header">
-          <div>
-            <div class="species-name">${displayName}</div>
-            <div class="species-sci">${sci}</div>
-          </div>
-          <div class="co2-badge">${sp.co2} kg/yr</div>
-        </div>
-        <div class="species-zones">${sp.zones.slice(0,3).map(z => `<span class="zone-chip">${z}</span>`).join('')}${sp.zones.length > 3 ? `<span class="zone-chip">+${sp.zones.length-3}</span>` : ''}</div>
-        <div class="co2-bar-wrap">
-          <div class="co2-bar-label"><span>CO₂ Absorption</span><span>${sp.co2} kg/tree/yr</span></div>
-          <div class="co2-bar-bg"><div class="co2-bar-fill" style="width:${pct}%"></div></div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function renderEnvMetrics() {
-  const container = document.getElementById('env-metrics');
-  container.innerHTML = ENV_METRICS.map(m => `
-    <div class="env-metric">
-      <div class="env-value">${m.value}</div>
-      <div class="env-unit">${m.unit}</div>
-      <div class="env-label">${m.label}</div>
-      <div class="env-trend trend-${m.trend}">${m.trend === 'up' ? '↑' : m.trend === 'down' ? '↓' : '→'} ${m.trend_label}</div>
-    </div>
-  `).join('');
-}
-
-function renderRiskBars() {
-  const container = document.getElementById('risk-bars');
-  container.innerHTML = RISK_ZONES.map(r => `
-    <div style="margin-bottom:0.5rem">
-      <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.6rem;margin-bottom:0.2rem">
-        <span style="color:rgba(245,245,240,0.6)">${r.zone}</span>
-        <span style="color:${r.color}">${r.level}%</span>
-      </div>
-      <div class="co2-bar-bg">
-        <div style="height:100%;width:${r.level}%;background:${r.color};border-radius:2px;transition:width 0.6s ease"></div>
-      </div>
-    </div>
-  `).join('');
-}
-
-// ────────────────────────────────────────────────
-// INTERACTIONS
-// ────────────────────────────────────────────────
-function switchTab(tab) {
-  currentPanel = tab;
-  document.querySelectorAll('.tab-btn').forEach((b,i) => {
-    b.classList.toggle('active', ['regions','species','env','ai'][i] === tab);
-  });
-  document.querySelectorAll('.panel').forEach(p => {
-    p.classList.remove('active');
-    p.style.display = 'none';
-  });
-  const panel = document.getElementById(`panel-${tab}`);
-  if (tab === 'ai') {
-    panel.style.display = 'flex';
-    panel.classList.add('active');
-    setTimeout(() => scrollAiToBottom(), 50);
-  } else {
-    panel.style.display = 'block';
-    panel.classList.add('active');
-  }
-}
-
-function selectDivision(divId) {
-  selectedDiv = divId;
-  const d = DIVISIONS[divId];
-  
-  // Update region cards
-  document.querySelectorAll('.region-card').forEach(c => c.classList.remove('selected'));
-  const rc = document.getElementById(`rc-${divId}`);
-  if (rc) rc.classList.add('selected');
-  
-  // Update map paths
-  document.querySelectorAll('.division-path').forEach(p => {
-    p.classList.toggle('selected', p.dataset.div === divId);
-  });
-  
-  // Show detail panel
-  showDetailPanel(divId);
-  
-  // Update stats
-  document.getElementById('statArea').textContent = `${(d.area_ha/1000).toFixed(0)}K ha`;
-  document.getElementById('statCO2').textContent = d.co2_range.split('–')[1]?.replace(' kg/tree/yr','') + ' kg';
-}
-
-function showDetailPanel(divId) {
-  const d = DIVISIONS[divId];
-  document.getElementById('dpTitle').textContent = d.name + ' Division';
-  document.getElementById('dpContent').innerHTML = `
-    <div class="dp-row"><span class="dp-k">Area</span><span class="dp-v">${(d.area_ha/1000).toFixed(0)}K ha</span></div>
-    <div class="dp-row"><span class="dp-k">CO₂ Range</span><span class="dp-v">${d.co2_range}</span></div>
-    <div class="dp-row"><span class="dp-k">Forest Cover</span><span class="dp-v">${d.forest_cover} → ${d.target_cover}</span></div>
-    <div class="dp-row"><span class="dp-k">Rainfall</span><span class="dp-v">${d.rainfall}</span></div>
-    <div class="dp-row"><span class="dp-k">Risk Level</span><span class="dp-v">${d.risk}</span></div>
-    <div class="dp-section-title">Priority Species</div>
-    ${d.species.map((sp, i) => `
-      <div class="dp-species-item">
-        <div class="dp-sp-name">${sp.split('(')[0].trim()}</div>
-        <div class="dp-sp-co2">${d.co2_vals[i]} kg/yr</div>
-      </div>
-    `).join('')}
-    <div class="dp-section-title">Why These Species?</div>
-    <div class="dp-why">${d.why}</div>
-  `;
-  document.getElementById('detailPanel').classList.add('visible');
-}
-
-function closeDetail() {
-  document.getElementById('detailPanel').classList.remove('visible');
-  selectedDiv = null;
-  document.querySelectorAll('.division-path').forEach(p => p.classList.remove('selected'));
-}
-
-function setupMapHovers() {
-  const tooltip = document.getElementById('mapTooltip');
-  const mapContainer = document.getElementById('mapContainer');
-  
-  document.querySelectorAll('.division-path').forEach(path => {
-    path.addEventListener('mousemove', (e) => {
-      if (!tooltipsEnabled) return;
-      const divId = path.dataset.div;
-      const d = DIVISIONS[divId];
-      if (!d) return;
+    <!-- CO2 Monthly Chart -->
+    <div class="card" style="margin-bottom:8px">
+      <div class="section-label">CO₂ Sequestration · Monthly (Mt)</div>
       
-      const rect = mapContainer.getBoundingClientRect();
-      let x = e.clientX - rect.left + 15;
-      let y = e.clientY - rect.top - 10;
-      if (x + 240 > rect.width) x -= 260;
-      if (y + 200 > rect.height) y -= 220;
-      
-      tooltip.style.left = x + 'px';
-      tooltip.style.top = y + 'px';
-      
-      document.getElementById('ttTitle').textContent = d.name + ' Division';
-      document.getElementById('ttRows').innerHTML = `
-        <div class="tt-row"><span class="tt-key">CO₂ Potential</span><span class="tt-val">${d.co2_potential}</span></div>
-        <div class="tt-row"><span class="tt-key">Priority Area</span><span class="tt-val">${(d.area_ha/1000).toFixed(0)}K ha</span></div>
-        <div class="tt-row"><span class="tt-key">Ecosystem</span><span class="tt-val">${d.ecosystem.split(',')[0]}</span></div>
-        <div class="tt-row"><span class="tt-key">Rainfall</span><span class="tt-val">${d.rainfall}</span></div>
-      `;
-      document.getElementById('ttSpecies').innerHTML = d.species.slice(0,3).map(sp =>
-        `<span class="tt-chip">${sp.split('(')[0].trim()}</span>`
-      ).join('');
-      
-      tooltip.classList.add('visible');
-    });
-    
-    path.addEventListener('mouseleave', () => {
-      tooltip.classList.remove('visible');
-    });
-  });
-}
-
-function toggleTooltips() {
-  tooltipsEnabled = !tooltipsEnabled;
-  const btn = document.getElementById('tooltipToggle');
-  btn.textContent = `💬 Tooltips ${tooltipsEnabled ? 'ON' : 'OFF'}`;
-  btn.classList.toggle('active', tooltipsEnabled);
-}
-
-function changeMapView(val) {
-  // Visual hint that view changed
-  document.querySelectorAll('.division-path').forEach(path => {
-    const d = DIVISIONS[path.dataset.div];
-    if (!d) return;
-    let opacity;
-    if (val === 'co2') opacity = d.priority === 1 ? 1 : d.priority === 2 ? 0.8 : 0.6;
-    else if (val === 'area') opacity = Math.min(1, d.area_ha / 182000 + 0.3);
-    else if (val === 'species') opacity = 0.7 + Math.random() * 0.3;
-    else opacity = 0.9;
-    path.style.opacity = opacity;
-  });
-}
-
-function resetMapView() {
-  document.querySelectorAll('.division-path').forEach(p => { p.style.opacity = '1'; });
-  document.getElementById('mapViewSelect').value = 'co2';
-  closeDetail();
-}
-
-function setView(v) {
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-}
-
-// ────────────────────────────────────────────────
-// AI ASSISTANT
-// ────────────────────────────────────────────────
-const conversationHistory = [];
-
-async function sendAiMessage() {
-  const input = document.getElementById('aiInput');
-  const msg = input.value.trim();
-  if (!msg) return;
-  input.value = '';
-  addMessage(msg, 'user');
-  await callAI(msg);
-}
-
-function sendQuick(msg) {
-  switchTab('ai');
-  setTimeout(() => {
-    document.getElementById('aiInput').value = msg;
-    sendAiMessage();
-  }, 100);
-}
-
-function handleAiKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendAiMessage();
-  }
-}
-
-function addMessage(text, role) {
-  const container = document.getElementById('aiMessages');
-  const div = document.createElement('div');
-  div.className = `msg msg-${role}`;
-  if (role === 'ai') {
-    div.innerHTML = `<div class="msg-header">BANGLATREES AI · ANALYSIS</div>${text}`;
-  } else {
-    div.textContent = text;
-  }
-  container.appendChild(div);
-  scrollAiToBottom();
-  return div;
-}
-
-function addTyping() {
-  const container = document.getElementById('aiMessages');
-  const div = document.createElement('div');
-  div.className = 'msg msg-ai';
-  div.id = 'typing-indicator';
-  div.innerHTML = `<div class="msg-header">BANGLATREES AI · THINKING</div><div class="typing-dots"><span></span><span></span><span></span></div>`;
-  container.appendChild(div);
-  scrollAiToBottom();
-}
-
-function removeTyping() {
-  const t = document.getElementById('typing-indicator');
-  if (t) t.remove();
-}
-
-function scrollAiToBottom() {
-  const c = document.getElementById('aiMessages');
-  c.scrollTop = c.scrollHeight;
-}
-
-async function callAI(userMessage) {
-  const btn = document.getElementById('aiSendBtn');
-  btn.disabled = true;
-  addTyping();
-
-  conversationHistory.push({ role: 'user', content: userMessage });
-
-  const systemPrompt = `You are BanglaTrees AI, an expert reforestation intelligence system for Bangladesh's 25 Crore Trees initiative. You have deep knowledge about:
-
-DIVISIONS & AREAS:
-- Chattogram (CHT + Cox's Bazar): 182,000 ha priority — Teak, Bamboo, Garjan (Dipterocarpus); 82% of national reforestation potential; 30-80 kg CO₂/tree/yr
-- Sylhet: 38,700 ha — Bamboo, Tea shade trees, Dipterocarpus; 3,000-4,500mm rainfall; highest biomass potential
-- Khulna: 95,000 ha — Mangroves (Sundri, Gewa, Keora); Sundarbans buffer; 3-5x more carbon/ha than terrestrial forests
-- Rajshahi: 28,900 ha — Sal, Acacia, Indian Rosewood; driest division; drought-resistant needed
-- Mymensingh: 31,200 ha — Sal, Bamboo, Mahogany; Haor wetlands; flood-prone ecosystem
-- Rangpur: 42,500 ha — Bamboo, Sal, Fruit Trees; Barind tract; soil degradation issues
-- Dhaka: 18,500 ha — Peepal, Pongamia, Rain Tree; urban heat island; air pollution combat
-- Barishal: 41,200 ha — Keora, Coconut, Bain, Indian Almond; coastal chars; cyclone risk
-
-CO₂ DATA (from BFI 2019 + peer-reviewed studies):
-- Bamboo (Bambusa balcooa): 200-400 tons/ha/5yr; fastest growing carbon sequester
-- Sal (Shorea robusta): 40-80 kg/yr verified; native; multi-ecosystem use
-- Teak (Tectona grandis): 30-50 kg/yr; 1.5-2.5 tons lifetime
-- Garjan (Dipterocarpus turbinatus): 40-60 kg/yr; CHT native dominant
-- Mangrove species: 15-40 kg/yr above ground PLUS 3-5x in root systems; blue carbon
-- Indian Rosewood (Dalbergia latifolia): 30-60 kg/yr; high-density timber
-- Pongamia pinnata: 30-50 kg/yr; nitrogen-fixing; salt-tolerant
-- Acacia auriculiformis: 10.6 kg/yr verified BFI; quick cover species
-
-MONITORING PARAMETERS: soil moisture, temperature, rainfall, CO₂ flux, canopy cover (NDVI), species survival rate, biodiversity index.
-
-NATIONAL TARGET: 16% forest cover (from 11.2% currently). National REDD+ Strategy. 25 Crore (250 million) trees.
-
-Respond in clear, scientific but accessible language. Be specific with numbers. Format responses with line breaks. Keep responses under 200 words. Use relevant emojis sparingly.`;
-
-  try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: conversationHistory
-      })
-    });
-
-    const data = await response.json();
-    const aiText = data.content?.[0]?.text || "I couldn't process that request. Please try again.";
-    
-    conversationHistory.push({ role: 'assistant', content: aiText });
-    
-    removeTyping();
-    addMessage(aiText.replace(/\n/g, '<br>'), 'ai');
-  } catch (err) {
-    removeTyping();
-    addMessage("⚠ Connection error. Please check your network and try again.", 'ai');
-  }
-  
-  btn.disabled = false;
-}
-</script>
-</body>
-</html>

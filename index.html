@@ -29,12 +29,262 @@
   --display:'Fraunces',serif;
   --nav-h:64px;--status-h:48px;
 }
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--white);font-family:var(--sans)}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--white);font-family:var(--sans);max-width:100vw;}
 
 /* STATUS BAR */
 .status-bar{height:var(--status-h);background:rgba(4,13,8,0.98);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid var(--border);position:fixed;top:0;left:0;right:0;z-index:300;max-width:600px;margin:0 auto;}
 .sb-brand{display:flex;align-items:center;gap:8px}
 .sb-icon{width:28px;height:28px;background:linear-gradient(135deg,var(--green),var(--lime));border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.sb-name{font-family:var(--display);font-weight:700;font-size:1rem;color:var(--acid);letter-spacing:-0.02em}
+.sb-right{display:flex;align-items:center;gap:10px}
+.live-pill{display:flex;align-items:center;gap:5px;background:rgba(168,245,94,0.1);border:1px solid rgba(168,245,94,0.25);border-radius:20px;padding:3px 9px}
+.live-dot{width:5px;height:5px;background:var(--acid);border-radius:50%;animation:pulse 1.5s infinite}
+.live-txt{font-family:var(--mono);font-size:0.52rem;color:var(--acid);letter-spacing:0.08em}
+.sb-time{font-family:var(--mono);font-size:0.55rem;color:var(--muted)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.5)}}
+
+/* SCROLL AREA */
+.app-scroll{position:fixed;top:var(--status-h);bottom:var(--nav-h);left:0;right:0;max-width:600px;margin:0 auto;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;}
+.app-scroll::-webkit-scrollbar{display:none}
+.page{display:none;padding:12px 12px 16px;min-height:100%}
+.page.active{display:block}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;max-width:600px;margin:0 auto;height:var(--nav-h);background:rgba(4,13,8,0.98);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:grid!important;grid-template-columns:repeat(5,1fr);z-index:9999;padding-bottom:env(safe-area-inset-bottom)}
+.nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:all 0.2s;background:transparent;border:none;color:var(--muted);font-family:var(--mono);font-size:0.48rem;letter-spacing:0.06em;text-transform:uppercase;position:relative}
+.nav-item.active{color:var(--acid)}
+.nav-item.active::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:20px;height:2px;background:var(--acid);border-radius:2px}
+.nav-icon{font-size:1.15rem;line-height:1}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px}
+.card+.card{margin-top:8px}
+.section-label{font-family:var(--mono);font-size:0.52rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--lime);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+
+/* HERO STATS */
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.hero-stat{background:linear-gradient(135deg,rgba(26,107,53,0.35),rgba(4,13,8,0.9));border:1px solid rgba(82,196,106,0.2);border-radius:12px;padding:14px 12px;position:relative;overflow:hidden}
+.hero-stat::before{content:'';position:absolute;top:-15px;right:-15px;width:50px;height:50px;background:radial-gradient(circle,rgba(168,245,94,0.12),transparent 70%);border-radius:50%}
+.hs-val{font-family:var(--display);font-size:1.55rem;font-weight:900;color:var(--acid);line-height:1;letter-spacing:-0.03em}
+.hs-label{font-family:var(--mono);font-size:0.5rem;color:var(--muted);letter-spacing:0.1em;margin-top:3px;text-transform:uppercase}
+.hs-sub{font-size:0.62rem;color:var(--lime);margin-top:4px}
+.hs-trend{display:inline-flex;align-items:center;gap:3px;font-family:var(--mono);font-size:0.52rem;color:var(--acid);background:rgba(168,245,94,0.1);padding:2px 6px;border-radius:3px;margin-top:4px}
+
+/* PROGRESS BAR */
+.prog-wrap{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-top:6px}
+.prog-fill{height:100%;border-radius:3px;transition:width 1s ease}
+
+/* MAP SECTION */
+.map-container{position:relative;background:linear-gradient(135deg,#071a0c,#040d08);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.map-tabs{display:flex;gap:4px;padding:8px 8px 0;overflow-x:auto;scrollbar-width:none}
+.map-tabs::-webkit-scrollbar{display:none}
+.map-tab{flex-shrink:0;background:var(--card);border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:0.5rem;padding:5px 10px;border-radius:5px;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em;white-space:nowrap}
+.map-tab.active{background:rgba(82,196,106,0.15);color:var(--acid);border-color:var(--lime)}
+.map-caption{font-family:var(--mono);font-size:0.5rem;color:var(--muted);padding:6px 10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.map-caption a{color:var(--lime);text-decoration:none}
+
+/* SVG Bangladesh Map */
+.bd-map-wrap{padding:10px;position:relative}
+.div-path{transition:all 0.25s;cursor:pointer;stroke-width:1.5}
+.div-path:hover{filter:brightness(1.4)}
+.div-path.selected{filter:brightness(1.6)}
+.div-label{font-family:var(--mono);font-size:6px;fill:rgba(237,242,232,0.7);pointer-events:none;font-weight:500}
+.div-label-sub{font-family:var(--mono);font-size:4.5px;fill:rgba(237,242,232,0.4);pointer-events:none}
+
+/* DIVISION DETAIL PANEL */
+.div-panel{background:linear-gradient(135deg,rgba(26,107,53,0.2),rgba(4,13,8,0.95));border:1px solid rgba(82,196,106,0.3);border-radius:10px;padding:12px;margin:8px 8px 0;display:none}
+.div-panel.show{display:block}
+.dp-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.dp-name{font-family:var(--display);font-size:1.1rem;font-weight:900;color:var(--acid);letter-spacing:-0.02em}
+.dp-close{background:none;border:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:0}
+.dp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:8px}
+.dp-stat{background:rgba(255,255,255,0.04);border-radius:6px;padding:7px;text-align:center}
+.dp-val{font-family:var(--display);font-size:0.9rem;font-weight:700;color:var(--acid)}
+.dp-lbl{font-family:var(--mono);font-size:0.45rem;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase}
+.dp-species{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+.sp-chip{background:rgba(168,245,94,0.08);color:rgba(168,245,94,0.7);font-family:var(--mono);font-size:0.5rem;padding:2px 7px;border-radius:3px;border:1px solid rgba(168,245,94,0.15)}
+.dp-alerts{margin-top:8px}
+.alert-item{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.68rem}
+.alert-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* NDC CARDS */
+.ndc-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.ndc-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px;text-align:center}
+.ndc-val{font-family:var(--display);font-size:1.3rem;font-weight:900;letter-spacing:-0.03em}
+.ndc-lbl{font-family:var(--mono);font-size:0.5rem;color:var(--muted);letter-spacing:0.07em;text-transform:uppercase;margin-top:2px}
+
+/* CO2 CHART */
+.chart-area{position:relative;height:80px;margin-top:8px}
+.chart-svg{width:100%;height:100%}
+.chart-label{font-family:var(--mono);font-size:0.5rem;color:var(--muted)}
+
+/* DIVISION LIST */
+.div-list{display:flex;flex-direction:column;gap:5px}
+.div-row{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 11px;display:flex;align-items:center;gap:9px;cursor:pointer;transition:all 0.2s}
+.div-row:hover,.div-row.active-row{border-color:var(--lime);background:rgba(26,107,53,0.15)}
+.dr-color{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.dr-info{flex:1}
+.dr-name{font-family:var(--sans);font-weight:600;font-size:0.82rem}
+.dr-meta{font-family:var(--mono);font-size:0.5rem;color:var(--muted);margin-top:1px}
+.dr-bar{height:2px;background:rgba(255,255,255,0.05);border-radius:1px;margin-top:4px;overflow:hidden}
+.dr-bar-fill{height:100%;border-radius:1px}
+.dr-trees{font-family:var(--mono);font-size:0.68rem;color:var(--acid);white-space:nowrap}
+
+/* SPECIES PAGE */
+.sp-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px;margin-bottom:7px}
+.spc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.spc-name{font-family:var(--sans);font-weight:600;font-size:0.9rem}
+.spc-sci{font-style:italic;font-size:0.62rem;color:var(--muted)}
+.spc-badge{background:linear-gradient(135deg,var(--green),#0d2e17);border:1px solid var(--lime);color:var(--acid);font-family:var(--mono);font-size:0.6rem;padding:3px 8px;border-radius:4px;white-space:nowrap}
+.spc-zones{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:5px}
+.spc-bar-wrap{height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
+.spc-bar{height:100%;border-radius:2px}
+.spc-why{font-size:0.66rem;color:var(--muted);line-height:1.45;margin-top:5px}
+
+/* IOT / MONITORING */
+.iot-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.iot-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.iot-val{font-family:var(--display);font-size:1.2rem;font-weight:700;line-height:1}
+.iot-unit{font-family:var(--mono);font-size:0.5rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
+.iot-trend{font-family:var(--mono);font-size:0.52rem;margin-top:3px}
+.alert-banner{background:rgba(255,82,82,0.08);border:1px solid rgba(255,82,82,0.25);border-radius:8px;padding:8px 10px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.alert-banner.warn{background:rgba(255,152,0,0.08);border-color:rgba(255,152,0,0.25)}
+.alert-banner.ok{background:rgba(82,196,106,0.08);border-color:rgba(82,196,106,0.25)}
+.ab-icon{font-size:1rem;flex-shrink:0}
+.ab-text{font-size:0.68rem;line-height:1.4}
+.ab-title{font-weight:600;color:var(--white);margin-bottom:1px}
+.ab-sub{color:var(--muted)}
+
+/* SATELLITE VIEWER */
+.sat-tabs{display:flex;gap:4px;margin-bottom:8px;overflow-x:auto;scrollbar-width:none}
+.sat-tabs::-webkit-scrollbar{display:none}
+.sat-btn{flex-shrink:0;background:var(--card);border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:0.5rem;padding:5px 9px;border-radius:5px;cursor:pointer;transition:all 0.2s;letter-spacing:0.05em}
+.sat-btn.active{background:rgba(79,195,247,0.12);color:var(--blue);border-color:var(--blue)}
+.sat-frame-wrap{border-radius:10px;overflow:hidden;background:#040d08;position:relative;margin-bottom:8px}
+.sat-frame-wrap iframe{width:100%;height:280px;border:none;display:block}
+.sat-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);transition:opacity 0.3s;z-index:5}
+.sat-loading-spinner{width:30px;height:30px;border:2px solid var(--border);border-top-color:var(--lime);border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sat-caption{font-family:var(--mono);font-size:0.52rem;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.sat-caption a{color:var(--blue);text-decoration:none}
+
+/* AI CHAT */
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - var(--status-h) - var(--nav-h) - 80px)}
+.chat-msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:8px;scrollbar-width:none}
+.chat-msgs::-webkit-scrollbar{display:none}
+.msg-user{background:rgba(168,245,94,0.08);border:1px solid rgba(168,245,94,0.15);border-radius:10px 10px 2px 10px;padding:9px 11px;font-size:0.78rem;align-self:flex-end;max-width:85%}
+.msg-ai{background:var(--card);border:1px solid var(--border);border-radius:2px 10px 10px 10px;padding:9px 11px;font-size:0.75rem;align-self:flex-start;max-width:90%;line-height:1.55}
+.msg-ai-label{font-family:var(--mono);font-size:0.48rem;color:var(--lime);letter-spacing:0.15em;margin-bottom:5px;text-transform:uppercase}
+.typing{display:flex;gap:4px;align-items:center;padding:4px 0}
+.typing span{width:5px;height:5px;background:var(--lime);border-radius:50%;animation:bounce 1.2s infinite}
+.typing span:nth-child(2){animation-delay:0.2s}
+.typing span:nth-child(3){animation-delay:0.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.chat-input-row{display:flex;gap:6px;padding-top:8px;border-top:1px solid var(--border)}
+.chat-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--white);font-family:var(--sans);font-size:0.78rem;outline:none;transition:border-color 0.2s}
+.chat-input:focus{border-color:var(--lime)}
+.chat-send{background:linear-gradient(135deg,var(--green),var(--lime));border:none;border-radius:8px;width:38px;height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:transform 0.15s;flex-shrink:0}
+.chat-send:hover{transform:scale(1.05)}
+.chat-send:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.quick-btns{display:flex;gap:4px;margin-bottom:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.quick-btns::-webkit-scrollbar{display:none}
+.qbtn{flex-shrink:0;background:var(--card);border:1px solid var(--border);color:var(--muted);font-family:var(--mono);font-size:0.5rem;padding:5px 9px;border-radius:4px;cursor:pointer;transition:all 0.2s;letter-spacing:0.04em}
+.qbtn:hover{border-color:var(--lime);color:var(--acid)}
+
+/* FOREST ZONES */
+.zone-list{display:flex;flex-direction:column;gap:6px}
+.zone-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 11px}
+.zi-header{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.zi-color{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.zi-name{font-weight:600;font-size:0.82rem}
+.zi-ha{font-family:var(--mono);font-size:0.6rem;color:var(--acid);margin-left:auto}
+.zi-species{font-size:0.65rem;color:var(--muted);line-height:1.4}
+.zi-pct{font-family:var(--mono);font-size:0.52rem;color:var(--lime);margin-top:4px}
+
+/* MINI CO2 BARS */
+.co2-chart{display:flex;align-items:flex-end;gap:3px;height:60px;margin-top:8px;margin-bottom:4px}
+.co2-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.co2-bar-actual{background:linear-gradient(180deg,var(--acid),var(--lime));border-radius:2px 2px 0 0;width:100%;min-height:2px}
+.co2-bar-target{background:rgba(82,196,106,0.1);border:1px dashed rgba(82,196,106,0.3);border-radius:2px 2px 0 0;width:100%;min-height:2px}
+.co2-month{font-family:var(--mono);font-size:0.42rem;color:var(--muted)}
+
+/* PHASE TIMELINE */
+.timeline{position:relative;padding-left:20px;margin-top:8px}
+.timeline::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:1px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:12px}
+.tl-item::before{content:'';position:absolute;left:-17px;top:4px;width:8px;height:8px;background:var(--green);border-radius:50%;border:1.5px solid var(--lime)}
+.tl-item.active::before{background:var(--acid);animation:pulse 1.5s infinite}
+.tl-phase{font-family:var(--mono);font-size:0.5rem;color:var(--lime);letter-spacing:0.1em;text-transform:uppercase}
+.tl-title{font-weight:600;font-size:0.78rem;margin-top:1px}
+.tl-desc{font-size:0.65rem;color:var(--muted);margin-top:2px;line-height:1.4}
+
+/* RESPONSIVE ADJUSTMENTS */
+@media (min-width:390px){
+  .hs-val{font-size:1.7rem}
+  .dp-name{font-size:1.2rem}
+}
+</style>
+</head>
+<body>
+
+<div class="status-bar">
+  <div class="sb-brand">
+    <div class="sb-icon">🌿</div>
+    <span class="sb-name">BanglaTrees</span>
+  </div>
+  <div class="sb-right">
+    <div class="live-pill"><div class="live-dot"></div><span class="live-txt">LIVE</span></div>
+    <span class="sb-time" id="sbTime">--:--</span>
+  </div>
+</div>
+
+<div class="app-scroll" id="appScroll">
+
+  <!-- ═══════════════ HOME PAGE ═══════════════ -->
+  <div class="page active" id="page-home">
+    <div class="section-label">National Dashboard · March 2026</div>
+
+    <div class="hero-grid">
+      <div class="hero-stat">
+        <div class="hs-val" id="stat-planted">187.4M</div>
+        <div class="hs-label">Trees Planted</div>
+        <div class="hs-sub">74.9% of 250M target</div>
+        <div class="prog-wrap"><div class="prog-fill" style="width:74.9%;background:linear-gradient(90deg,var(--green),var(--acid))"></div></div>
+      </div>
+      <div class="hero-stat">
+        <div class="hs-val" id="stat-surviving">142.9M</div>
+        <div class="hs-label">Surviving</div>
+        <div class="hs-sub" id="stat-survival">76% survival rate</div>
+        <div class="prog-wrap"><div class="prog-fill" style="width:76%;background:linear-gradient(90deg,var(--lime),var(--acid))"></div></div>
+      </div>
+      <div class="hero-stat">
+        <div class="hs-val" id="stat-co2">12.8 Mt</div>
+        <div class="hs-label">CO₂ Sequestered</div>
+        <div class="hs-sub" id="stat-co2-target">vs 13.5 Mt target</div>
+        <div class="prog-wrap"><div class="prog-fill" style="width:94.8%;background:linear-gradient(90deg,var(--blue),var(--lime))"></div></div>
+      </div>
+      <div class="hero-stat">
+        <div class="hs-val" id="stat-revenue">$52M</div>
+        <div class="hs-label">Carbon Revenue</div>
+        <div class="hs-sub">Verra/GS verified</div>
+        <div class="prog-wrap"><div class="prog-fill" style="width:52%;background:linear-gradient(90deg,var(--gold),var(--acid))"></div></div>
+      </div>
+    </div>
+
+    <!-- NDC Progress -->
+    <div class="card" style="margin-bottom:8px">
+      <div class="section-label">NDC 3.0 Progress · UNFCCC</div>
+      <div class="ndc-row">
+        <div class="ndc-card"><div class="ndc-val" style="color:var(--lime)">28%</div><div class="ndc-lbl">AFOLU Target</div></div>
+        <div class="ndc-card"><div class="ndc-val" style="color:var(--acid)">42%</div><div class="ndc-lbl">Unconditional</div></div>
+        <div class="ndc-card"><div class="ndc-val" style="color:var(--blue)">15%</div><div class="ndc-lbl">Conditional</div></div>
+        <div class="ndc-card"><div class="ndc-val" style="color:var(--gold)">35%</div><div class="ndc-lbl">Carbon $</div></div>
+      </div>
+    </div>
+
+    <!-- CO2 Monthly Chart -->
+    <div class="card" style="margin-bottom:8px">
+      <div class="section-label">CO₂ Seques.sb-icon{width:28px;height:28px;background:linear-gradient(135deg,var(--green),var(--lime));border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px}
 .sb-name{font-family:var(--display);font-weight:700;font-size:1rem;color:var(--acid);letter-spacing:-0.02em}
 .sb-right{display:flex;align-items:center;gap:10px}
 .live-pill{display:flex;align-items:center;gap:5px;background:rgba(168,245,94,0.1);border:1px solid rgba(168,245,94,0.25);border-radius:20px;padding:3px 9px}
